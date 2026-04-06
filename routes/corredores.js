@@ -67,4 +67,20 @@ router.put('/:id', (req, res) => {
     })
 })
 
+router.get("/melhor-volta", (req, res) => {
+    const sql = `SELECT nome, tempo
+    FROM corredores, voltas
+    WHERE corredores.id = voltas.corredores_id
+    ORDER BY tempo ASC
+    LIMIT 1`;
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar melhor volta:', err);
+            return res.status(500).json({ error: 'Erro ao buscar melhor volta' });
+        }
+        res.json(results[0]);
+    });
+});
+
 module.exports = router;
