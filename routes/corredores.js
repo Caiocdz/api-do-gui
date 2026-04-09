@@ -83,4 +83,24 @@ router.get("/melhor-volta", (req, res) => {
     });
 });
 
+router.get("/tempo-total", (req, res) => {
+    const sql = `
+        SELECT corredores.nome, 
+               COUNT(voltas.id) * SUM(voltas.tempo)
+        FROM corredores, voltas
+        WHERE corredores.id = voltas.corredores_id
+        GROUP BY corredores.id, corredores.nome
+        ORDER BY COUNT(voltas.id) * SUM(voltas.tempo) ASC
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar tempo total:', err);
+            return res.status(500).json({ error: 'Erro ao buscar tempo total' });
+        }
+        res.json(results);
+    });
+});
+
+
 module.exports = router;
