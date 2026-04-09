@@ -86,12 +86,16 @@ router.get("/melhor-volta", (req, res) => {
 router.get("/tempo-total", (req, res) => {
     const sql = `
         SELECT corredores.nome, 
-               COUNT(voltas.id) * SUM(voltas.tempo)
+               SUM(voltas.tempo)
         FROM corredores, voltas
         WHERE corredores.id = voltas.corredores_id
         GROUP BY corredores.id, corredores.nome
-        ORDER BY COUNT(voltas.id) * SUM(voltas.tempo) ASC
+        ORDER BY SUM(voltas.tempo) ASC
     `;
+
+    router.get ("/voltas", (req, res) => {
+        
+    })
 
     db.query(sql, (err, results) => {
         if (err) {

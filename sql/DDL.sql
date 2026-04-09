@@ -50,7 +50,7 @@ DROP TABLE IF EXISTS `corrida_db`.`voltas` ;
 CREATE TABLE IF NOT EXISTS `corrida_db`.`voltas` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `tempo` DECIMAL(10,2) NULL,
-  `data` TIMESTAMP NULL,
+  `voltas` TIMESTAMP NOT NULL,
   `corredores_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_voltas_corredores_idx` (`corredores_id` ASC) VISIBLE,
