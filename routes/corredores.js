@@ -69,10 +69,10 @@ router.put('/:id', (req, res) => {
 
 router.get("/melhor-volta", (req, res) => {
     const sql = `
-        SELECT corredores.nome, voltas.tempo
-        FROM corredores, voltas
-        WHERE corredores.id = voltas.corredores_id
-        ORDER BY voltas.tempo ASC
+        SELECT corredores.nome, corridas.tempo
+        FROM corredores, corridas
+        WHERE corredores.id = corridas.corredores_id
+        ORDER BY corridas.tempo ASC
         LIMIT 1
     `;
 
@@ -87,11 +87,11 @@ router.get("/melhor-volta", (req, res) => {
 
 router.get("/tempo-total", (req, res) => {
     const sql = `
-        SELECT corredores.nome, SUM(voltas.tempo)
-        FROM corredores, voltas
-        WHERE corredores.id = voltas.corredores_id
+        SELECT corredores.nome, SUM(corridas.tempo)
+        FROM corredores, corridas
+        WHERE corredores.id = corridas.corredores_id
         GROUP BY corredores.id, corredores.nome
-        ORDER BY SUM(voltas.tempo) ASC
+        ORDER BY SUM(corridas.tempo) ASC
     `;
 
     db.query(sql, (err, results) => {
@@ -105,11 +105,11 @@ router.get("/tempo-total", (req, res) => {
 
 router.get("/voltas", (req, res) => {
     const sql = `
-        SELECT corredores.nome, COUNT(voltas.id)
-        FROM corredores, voltas
-        WHERE corredores.id = voltas.corredores_id
+        SELECT corredores.nome, SUM(corridas.voltas)
+        FROM corredores, corridas
+        WHERE corredores.id = corridas.corredores_id
         GROUP BY corredores.id, corredores.nome
-        ORDER BY COUNT(voltas.id) ASC
+        ORDER BY SUM(corridas.voltas) ASC
     `;
 
     db.query(sql, (err, results) => {

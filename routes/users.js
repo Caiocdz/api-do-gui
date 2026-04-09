@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// GET - listar todos os usuários
 router.get('/', (req, res) => {
     const sql = 'SELECT * FROM users';
     db.query(sql, (err, results) => {
@@ -15,7 +14,6 @@ router.get('/', (req, res) => {
     });
 });
 
-// POST - criar novo usuário
 router.post('/', (req, res) => {
     const { nome, email, senha } = req.body;
 

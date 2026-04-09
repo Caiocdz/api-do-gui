@@ -45,13 +45,13 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `corrida_db`.`voltas`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `corrida_db`.`voltas` ;
+DROP TABLE IF EXISTS `corrida_db`.`corridas` ;
 
-CREATE TABLE IF NOT EXISTS `corrida_db`.`voltas` (
+CREATE TABLE IF NOT EXISTS `corrida_db`.`corridas` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `tempo` DECIMAL(10,2) NULL,
-  `voltas` TIMESTAMP NOT NULL,
-  `corredores_id` INT NOT NULL,
+  `voltas` INT NOT NULL, 
+  `corredores_id` INT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_voltas_corredores_idx` (`corredores_id` ASC) VISIBLE,
   CONSTRAINT `fk_voltas_corredores`
