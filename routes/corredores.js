@@ -121,4 +121,22 @@ router.get("/voltas", (req, res) => {
     });
 });
 
+router.get("/ranking", (req, res) => {
+    const sql = `
+        SELECT corredores.nome, corredores.turma, SUM(corridas.tempo)
+        FROM corredores, corridas
+        WHERE corredores.id = corridas.corredores_id
+        GROUP BY corredores.id, corredores.nome, corredores.turma
+        ORDER BY SUM(corridas.tempo) ASC
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar ranking:', err);
+            return res.status(500).json({ error: 'Erro ao buscar ranking' });
+        }
+        res.json(results);
+    });
+});
+
 module.exports = router;
