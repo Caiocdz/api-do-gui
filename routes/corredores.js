@@ -68,11 +68,13 @@ router.put('/:id', (req, res) => {
 })
 
 router.get("/melhor-volta", (req, res) => {
-    const sql = `SELECT nome, tempo
-    FROM corredores, voltas
-    WHERE corredores.id = voltas.corredores_id
-    ORDER BY tempo ASC
-    LIMIT 1`;
+    const sql = `
+        SELECT corredores.nome, voltas.tempo
+        FROM corredores, voltas
+        WHERE corredores.id = voltas.corredores_id
+        ORDER BY voltas.tempo ASC
+        LIMIT 1
+    `;
 
     db.query(sql, (err, results) => {
         if (err) {
@@ -85,17 +87,12 @@ router.get("/melhor-volta", (req, res) => {
 
 router.get("/tempo-total", (req, res) => {
     const sql = `
-        SELECT corredores.nome, 
-               SUM(voltas.tempo)
+        SELECT corredores.nome, SUM(voltas.tempo)
         FROM corredores, voltas
         WHERE corredores.id = voltas.corredores_id
         GROUP BY corredores.id, corredores.nome
         ORDER BY SUM(voltas.tempo) ASC
     `;
-
-    router.get ("/voltas", (req, res) => {
-        
-    })
 
     db.query(sql, (err, results) => {
         if (err) {
@@ -106,5 +103,22 @@ router.get("/tempo-total", (req, res) => {
     });
 });
 
+router.get("/voltas", (req, res) => {
+    const sql = `
+        SELECT corredores.nome, COUNT(voltas.id)
+        FROM corredores, voltas
+        WHERE corredores.id = voltas.corredores_id
+        GROUP BY corredores.id, corredores.nome
+        ORDER BY COUNT(voltas.id) ASC
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar quantidade de voltas:', err);
+            return res.status(500).json({ error: 'Erro ao buscar quantidade de voltas' });
+        }
+        res.json(results);
+    });
+});
 
 module.exports = router;
