@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db')
+const bcrypt = require('bcrypt')
 
 router.get('/cadastrados', (req, res) => {
     const sql = "SELECT * FROM corredores"
@@ -14,22 +15,29 @@ router.get('/cadastrados', (req, res) => {
     })
 })
 
-router.post('/', (req, res) => {
-    const { nome, turma } = req.body
-    if (!nome || !turma) {
-        return res.status(400).json({ error: 'nome e turma são obrigatórios' });
+router.post('/', async (req, res) => {
+    const { nome, turma, senha } = req.body;
+
+    if (!nome || !turma || !senha) {
+        return res.status(400).json({ error: 'nome, turma e senha são obrigatórios' });
     }
 
-    const sql = "INSERT INTO corredores (nome, turma) VALUES(?,?)"
-    db.query(sql, [nome, turma], (err, results) => {
+    const senhaHash2 = await bcrypt.hash(senha, 10);
+
+    const sql = "INSERT INTO corredores (nome, turma, senha) VALUES(?,?,?)";
+
+    db.query(sql, [nome, turma, senhaHash2], (err, results) => {
         if (err) {
             console.error('Erro ao criar corredor:', err);
-            res.status(500).json({ error: 'Erro ao criar corredor' });
-        } else {
-            res.status(201).json({ message: 'Corredor criado com sucesso!', id: results.insertId });
+            return res.status(500).json({ error: 'Erro ao criar corredor' });
         }
-    })
-})
+
+        res.status(201).json({
+            message: 'Corredor criado com sucesso!',
+            id: results.insertId
+        });
+    });
+});
 
 router.delete('/:id', (req, res) => {
     const { id } = req.params
@@ -46,26 +54,31 @@ router.delete('/:id', (req, res) => {
     })
 })
 
-router.put('/:id', (req, res) => {
-    const { id } = req.params
-    const { nome, turma } = req.body
+router.put('/:id', async (req, res) => {
+    const { id } = req.params;
+    const { nome, turma, senha } = req.body;
 
-    if (!nome || !turma) {
-        return res.status(400).json({ error: 'nome e turma são obrigatórios' });
+    if (!nome || !turma || !senha) {
+        return res.status(400).json({ error: 'nome, turma e senha são obrigatórios' });
     }
 
-    const sql = "UPDATE corredores SET nome = ?, turma = ? WHERE id = ?"
-    db.query(sql, [nome, turma, id], (err, results) => {
+    const senhaHash2 = await bcrypt.hash(senha, 10);
+
+    const sql = "UPDATE corredores SET nome = ?, turma = ?, senha = ? WHERE id = ?";
+
+    db.query(sql, [nome, turma, senhaHash2, id], (err, results) => {
         if (err) {
             console.error('Erro ao atualizar corredor:', err);
-            res.status(500).json({ error: 'Erro ao atualizar corredor' });
-        } else if (results.affectedRows === 0) {
-            res.status(404).json({ error: 'Corredor não encontrado' });
-        } else {
-            res.status(200).json({ message: 'Corredor atualizado com sucesso!' });
+            return res.status(500).json({ error: 'Erro ao atualizar corredor' });
         }
-    })
-})
+
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ error: 'Corredor não encontrado' });
+        }
+
+        res.status(200).json({ message: 'Corredor atualizado com sucesso!' });
+    });
+});
 
 router.get("/melhor-volta", (req, res) => {
     const sql = `

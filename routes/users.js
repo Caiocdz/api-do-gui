@@ -16,6 +16,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+    const senhaHash = await( bcrypt.hash('123456', 10));
     const { nome, email, senha } = req.body;
 
     if (!nome || !email || !senha) {
@@ -23,7 +24,7 @@ router.post('/', (req, res) => {
     }
 
     const sql = 'INSERT INTO users (nome, email, senha) VALUES (?, ?, ?)';
-    db.query(sql, [nome, email, senha], (err, result) => {
+    db.query(sql, [nome, email, senhaHash], (err, result) => {
         if (err) {
             console.error('Erro ao criar usuário:', err);
             res.status(500).json({ error: 'Erro ao criar usuário' });
