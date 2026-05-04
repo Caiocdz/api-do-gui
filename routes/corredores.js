@@ -4,6 +4,19 @@ const db = require('../db')
 const bcrypt = require('bcrypt')
 
 
+// GET todos os corredores
+router.get('/', (req, res) => {
+    const sql = "SELECT * FROM corredores"
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Erro ao buscar corredores:', err);
+            res.status(500).json({ error: 'Erro ao buscar corredores' });
+        } else {
+            res.json(results);
+        }
+    })
+})
+
 router.get('/cadastrados', (req, res) => {
     const sql = "SELECT * FROM corredores"
     db.query(sql, (err, results) => {
